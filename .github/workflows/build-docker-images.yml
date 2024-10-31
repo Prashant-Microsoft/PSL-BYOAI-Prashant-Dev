@@ -22,7 +22,7 @@ jobs:
           #   registry: bycwacontainerreg.azurecr.io
           #   username: bycwacontainerreg
 
-          - app_name: byoaia-app
+          - app_name: byoaires-app
             dockerfile: ResearchAssistant/App/WebApp.Dockerfile
             registry: resasscontainerreg.azurecr.io
             username: resasscontainerreg
