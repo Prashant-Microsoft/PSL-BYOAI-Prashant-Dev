@@ -16,6 +16,7 @@ jobs:
     strategy:
       matrix:
         include:
+          #  test
           # - app_name: byc-wa-app
           #   dockerfile: ClientAdvisor/App/WebApp.Dockerfile
           #   registry: bycwacontainerreg.azurecr.io
