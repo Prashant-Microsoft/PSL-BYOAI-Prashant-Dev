@@ -20,7 +20,7 @@ RUN apk add --no-cache --virtual .build-deps \
     libpq \  
     && pip install --no-cache-dir uwsgi  
   
-COPY requirements.txt /usr/src/app/  
+COPY ./ResearchAssistant/App/requirements.txt /usr/src/app/  
 RUN pip install --no-cache-dir -r /usr/src/app/requirements.txt \  
     && rm -rf /root/.cache  
   
