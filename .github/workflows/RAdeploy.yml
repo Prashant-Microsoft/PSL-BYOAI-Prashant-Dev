@@ -72,43 +72,43 @@ jobs:
       #       --template-file ResearchAssistant/Deployment/bicep/main.bicep \
       #       --parameters solutionPrefix=${{ env.SOLUTION_PREFIX }}
             
-      - name: Delete Bicep Deployment
-        if: success()
-        run: |
-          set -e  
-          echo "Checking if resource group exists..."
-          rg_exists=$(az group exists --name ${{ env.RESOURCE_GROUP_NAME }})
-          if [ "$rg_exists" = "true" ]; then
-            echo "Resource group exist. Cleaning..."
-            az group delete \
-                --name ${{ env.RESOURCE_GROUP_NAME }} \
-                --yes \
-                --no-wait
-            echo "Resource group deleted...  ${{ env.RESOURCE_GROUP_NAME }}"
-          else
-            echo "Resource group does not exists."
-          fi
-
-      # - name: Purging the Resources
+      # - name: Delete Bicep Deployment
       #   if: success()
       #   run: |
-      #     set -e 
+      #     set -e  
+      #     echo "Checking if resource group exists..."
+      #     rg_exists=$(az group exists --name ${{ env.RESOURCE_GROUP_NAME }})
+      #     if [ "$rg_exists" = "true" ]; then
+      #       echo "Resource group exist. Cleaning..."
+      #       az group delete \
+      #           --name ${{ env.RESOURCE_GROUP_NAME }} \
+      #           --yes \
+      #           --no-wait
+      #       echo "Resource group deleted...  ${{ env.RESOURCE_GROUP_NAME }}"
+      #     else
+      #       echo "Resource group does not exists."
+      #     fi
+
+      - name: Purging the Resources
+        if: success()
+        run: |
+          set -e 
           
-      #     OPENAI_COMMON_PART="-openai"
-      #     openai_name="${{ env.SOLUTION_PREFIX }}${OPENAI_COMMON_PART}"
-      #     echo "Azure OpenAI: $openai_name"
+          OPENAI_COMMON_PART="purg02-openai"
+          openai_name="${{ env.SOLUTION_PREFIX }}${OPENAI_COMMON_PART}"
+          echo "Azure OpenAI: $openai_name"
 
-      #     MULTISERVICE_COMMON_PART="-cogser"
-      #     multiservice_account_name="${{ env.SOLUTION_PREFIX }}${OPENAI_COMMON_PART}"
-      #     echo "Azure Multi Service Account: $application_name"
+          MULTISERVICE_COMMON_PART="purg02-cogser"
+          multiservice_account_name="${{ env.SOLUTION_PREFIX }}${OPENAI_COMMON_PART}"
+          echo "Azure Multi Service Account: $application_name"
 
-      #     echo "Purging the OpenAI Resource..."
-      #     az resource delete --ids /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/providers/Microsoft.CognitiveServices/locations/eastus/resourceGroups/myResourceGroup4/deletedAccounts/$openai_name --verbose
-      #     echo "Purged the OpenAI Resource: $openai_name"
+          echo "Purging the OpenAI Resource..."
+          az resource delete --ids /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/providers/Microsoft.CognitiveServices/locations/eastus/resourceGroups/myResourceGroup4/deletedAccounts/$openai_name --verbose
+          echo "Purged the OpenAI Resource: $openai_name"
    
-      #     echo "Purging the MultiService account Resource..."
-      #     az resource delete --ids /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/providers/Microsoft.CognitiveServices/locations/eastus/resourceGroups/myResourceGroup4/deletedAccounts/$multiservice_account_name --verbose
-      #     echo "Purged the MultiService account Resource: $multiservice_account_name"
+          echo "Purging the MultiService account Resource..."
+          az resource delete --ids /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/providers/Microsoft.CognitiveServices/locations/eastus/resourceGroups/myResourceGroup4/deletedAccounts/$multiservice_account_name --verbose
+          echo "Purged the MultiService account Resource: $multiservice_account_name"
 
       # - name: Send Notification on Failure
       #   if: failure()
