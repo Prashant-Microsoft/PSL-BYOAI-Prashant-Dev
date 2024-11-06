@@ -104,20 +104,25 @@ jobs:
           set -e  
           echo "Checking if resource group exists..."
           echo "Authenticating with Azure PowerShell..."
-
+      
           # Authenticate with Azure using Service Principal credentials
-          pwsh -Command |
-            $ErrorActionPreference = 'Stop'
-            $tenantId = "${{ secrets.AZURE_TENANT_ID }}"
-            $clientId = "${{ secrets.AZURE_CLIENT_ID }}"
-            $clientSecret = "${{ secrets.AZURE_CLIENT_SECRET }}"
-            Connect-AzAccount -ServicePrincipal -Tenant $tenantId -ApplicationId $clientId -ClientSecret $clientSecret
-
+          pwsh -Command "
+            \$ErrorActionPreference = 'Stop'
+            \$tenantId = '${{ secrets.AZURE_TENANT_ID }}'
+            \$clientId = '${{ secrets.AZURE_CLIENT_ID }}'
+            \$clientSecret = '${{ secrets.AZURE_CLIENT_SECRET }}'
+            
+            # Connect-AzAccount to authenticate using the service principal
+            Connect-AzAccount -ServicePrincipal -Tenant \$tenantId -ApplicationId \$clientId -ClientSecret \$clientSecret
+          "
+      
           # Purge specific Cognitive Services resource by ResourceId
           echo "Purging Cognitive Services resource..."
-          pwsh -Command "Remove-AzResource -ResourceId /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/providers/Microsoft.CognitiveServices/locations/eastus/resourceGroups/myResourceGroup3/deletedAccounts/myOpenAIResource25 -ApiVersion 2021-04-30 -Force"
+          pwsh -Command "
+            Remove-AzResource -ResourceId /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/providers/Microsoft.CognitiveServices/locations/eastus/resourceGroups/myResourceGroup3/deletedAccounts/myOpenAIResource25 -ApiVersion 2021-04-30 -Force
+          "
           echo "Cognitive Services resource purged..."
-
+      
 
       - name: Send Notification on Failure
         if: failure()
