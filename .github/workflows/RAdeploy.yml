@@ -107,7 +107,7 @@ jobs:
           echo "Purged the OpenAI Resource: $openai_name"
    
           echo "Purging the MultiService account Resource..."
-          az resource delete --ids /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/providers/Microsoft.CognitiveServices/locations/eastus/resourceGroups/myResourceGroup4/deletedAccounts/$multiservice_account_name --verbose
+          az resource delete --ids /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/providers/Microsoft.CognitiveServices/locations/eastus/resourceGroups/myResourceGroup4/deletedAccounts/"$multiservice_account_name" --verbose
           echo "Purged the MultiService account Resource: $multiservice_account_name"
 
       # - name: Send Notification on Failure
