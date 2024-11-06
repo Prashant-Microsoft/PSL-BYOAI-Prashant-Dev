@@ -101,7 +101,7 @@ jobs:
 
           MULTISERVICE_COMMON_PART="purg02-cogser"
           # multiservice_account_name="${{ env.SOLUTION_PREFIX }}${MULTISERVICE_COMMON_PART}"
-          multiservice_account_name-"testmultires"
+          multiservice_account_name="testmultires"
           echo "Azure Multi Service Account: $multiservice_account_name"
 
           # Function to handle errors
