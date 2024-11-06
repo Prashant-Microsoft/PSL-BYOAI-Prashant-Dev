@@ -97,7 +97,7 @@ jobs:
       - name: Purging the Resources
         if: success()
         run: |
-          set -e  
+          # set -e  
           echo "Checking if resource group exists..."
           rg_exists=$(az group exists --name myResourceGroup3)
           if [ "$rg_exists" = "true" ]; then
