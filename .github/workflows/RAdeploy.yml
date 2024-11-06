@@ -108,10 +108,10 @@ jobs:
           # echo "Azure Open AI: $application_name"
 
           echo "Checking if resource group exists..."
-          rg_exists=$(az group exists --name myResourceGroup3)
+          rg_exists=$(az group exists --name myResourceGroup4)
           if [ "$rg_exists" = "true" ]; then
             echo "Resource group exist. Cleaning..."
-            az resource delete --ids /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/providers/Microsoft.CognitiveServices/locations/eastus/resourceGroups/myResourceGroup4/deletedAccounts/purgeOpenAIResource35 --verbose
+            az resource delete --ids /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/providers/Microsoft.CognitiveServices/locations/eastus/resourceGroups/myResourceGroup4/deletedAccounts/purgeOpenAIResource5 --verbose
             echo "Resource group deleted...  myResourceGroup3"
           else
             echo "Resource group does not exists."
