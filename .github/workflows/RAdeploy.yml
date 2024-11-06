@@ -119,7 +119,7 @@ jobs:
    
            # Purge MultiService account resource
           echo "Purging the MultiService account Resource..."
-          if ! az resource delete --ids /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/myResourceGroup4/providers/Microsoft.CognitiveServices/accounts/$multiservice_account_name --verbose; then
+          if ! az resource delete --ids /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/myResourceGrou4/providers/Microsoft.CognitiveServices/accounts/$multiservice_account_name --verbose; then
             echo "Failed to purge MultiService account resource: $multiservice_account_name"
             handle_error 1
           else
