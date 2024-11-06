@@ -94,15 +94,24 @@ jobs:
       #       echo "Resource group does not exists."
       #     fi
 
-      - name: Purging the open ai Resources
+      - name: Purging open ai Resources
         if: success()
         run: |
-          # set -e  
+          set -e 
+          
+          # OPENAI_COMMON_PART="-openai"
+          # application_name="${{ env.SOLUTION_PREFIX }}${OPENAI_COMMON_PART}"
+          # echo "Azure Open AI: $application_name"
+
+          # MULTISERVICE_COMMON_PART="-cogser"
+          # application_name="${{ env.SOLUTION_PREFIX }}${OPENAI_COMMON_PART}"
+          # echo "Azure Open AI: $application_name"
+
           echo "Checking if resource group exists..."
           rg_exists=$(az group exists --name myResourceGroup3)
           if [ "$rg_exists" = "true" ]; then
             echo "Resource group exist. Cleaning..."
-            az resource delete --ids /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/providers/Microsoft.CognitiveServices/locations/eastus/resourceGroups/myResourceGroup3/deletedAccounts/myOpenAIResource25 --verbose
+            az resource delete --ids /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/providers/Microsoft.CognitiveServices/locations/eastus/resourceGroups/myResourceGroup4/deletedAccounts/purgeOpenAIResource35 --verbose
             echo "Resource group deleted...  myResourceGroup3"
           else
             echo "Resource group does not exists."
