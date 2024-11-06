@@ -103,6 +103,16 @@ jobs:
         run: |
           set -e  
           echo "Checking if resource group exists..."
+          echo "Authenticating with Azure PowerShell..."
+          pwsh -Command |
+            $ErrorActionPreference = 'Stop'
+            $clientId = "${{ secrets.AZURE_CLIENT_ID }}"
+            $clientSecret = "${{ secrets.AZURE_CLIENT_SECRET }}"
+            $tenantId = "${{ secrets.AZURE_TENANT_ID }}"
+        
+           # Connect-AzAccount to authenticate using the service principal
+            Connect-AzAccount -ServicePrincipal -Tenant $tenantId -ApplicationId $clientId -CertificateThumbprint $clientSecret
+            
           # rg_exists=$(az group exists --name myResourceGroup3)
           # if [ "$rg_exists" = "true" ]; then
           # Purge specific Cognitive Services resource by ResourceId
