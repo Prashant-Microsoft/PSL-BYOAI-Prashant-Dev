@@ -106,14 +106,7 @@ jobs:
           echo "Authenticating with Azure PowerShell..."
            # Authenticate with Azure in PowerShell using Service Principal credentials
           echo "Authenticating with Azure PowerShell..."
-          pwsh -Command |
-            $ErrorActionPreference = 'Stop'
-            $clientId = "${{ secrets.AZURE_CLIENT_ID }}"
-            $clientSecret = "${{ secrets.AZURE_CLIENT_SECRET }}"
-            $tenantId = "${{ secrets.AZURE_TENANT_ID }}"
-            
-            # Connect-AzAccount to authenticate using the service principal
-            Connect-AzAccount -ServicePrincipal -Tenant $tenantId -ApplicationId $clientId -ClientSecret $clientSecret
+          pwsh -Command Connect-AzAccount -ServicePrincipal -Tenant  -Appl${{ secrets.AZURE_TENANT_ID }}icationId ${{ secrets.AZURE_CLIENT_ID }} -ClientSecret ${{ secrets.AZURE_CLIENT_SECRET }}
             
           # rg_exists=$(az group exists --name myResourceGroup3)
           # if [ "$rg_exists" = "true" ]; then
