@@ -107,7 +107,7 @@ jobs:
           # if [ "$rg_exists" = "true" ]; then
           # Purge specific Cognitive Services resource by ResourceId
             echo "Purging Cognitive Services resource..."
-            pwsh -Command Remove-AzResource -ResourceId /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/providers/Microsoft.CognitiveServices/locations/eastus/resourceGroups/myResourceGroup3/deletedAccounts/myOpenAIResource25 -ApiVersion 2021-04-30 -Confirm:$false
+            pwsh -Command Remove-AzResource -ResourceId /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/providers/Microsoft.CognitiveServices/locations/eastus/resourceGroups/myResourceGroup3/deletedAccounts/myOpenAIResource25 -ApiVersion 2021-04-30 -Confirm false
             echo "Cognitive Services resource purged..."
           # else
           #   echo "Resource group does not exists."
