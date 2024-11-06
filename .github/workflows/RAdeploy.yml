@@ -99,8 +99,8 @@ jobs:
           echo "Azure OpenAI: $openai_name"
 
           MULTISERVICE_COMMON_PART="purg02-cogser"
-          multiservice_account_name="${{ env.SOLUTION_PREFIX }}${OPENAI_COMMON_PART}"
-          echo "Azure Multi Service Account: $application_name"
+          multiservice_account_name="${{ env.SOLUTION_PREFIX }}${MULTISERVICE_COMMON_PART}"
+          echo "Azure Multi Service Account: $multiservice_account_name"
 
           echo "Purging the OpenAI Resource..."
           az resource delete --ids /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/providers/Microsoft.CognitiveServices/locations/eastus2/resourceGroups/myResourceGroup4/deletedAccounts/$openai_name --verbose
