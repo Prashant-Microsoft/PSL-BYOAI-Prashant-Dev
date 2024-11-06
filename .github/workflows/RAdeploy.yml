@@ -95,11 +95,13 @@ jobs:
           set -e 
           # Define variables
           OPENAI_COMMON_PART="purg02-openai"
-          openai_name="${{ env.SOLUTION_PREFIX }}${OPENAI_COMMON_PART}"
+          # openai_name="${{ env.SOLUTION_PREFIX }}${OPENAI_COMMON_PART}"
+          openai_name="purgeOpenAIResource5"
           echo "Azure OpenAI: $openai_name"
 
           MULTISERVICE_COMMON_PART="purg02-cogser"
-          multiservice_account_name="${{ env.SOLUTION_PREFIX }}${MULTISERVICE_COMMON_PART}"
+          # multiservice_account_name="${{ env.SOLUTION_PREFIX }}${MULTISERVICE_COMMON_PART}"
+          multiservice_account_name-"testmultires"
           echo "Azure Multi Service Account: $multiservice_account_name"
 
           # Function to handle errors
@@ -119,7 +121,7 @@ jobs:
    
            # Purge MultiService account resource
           echo "Purging the MultiService account Resource..."
-          if ! az resource delete --ids /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/myResourceGrou4/providers/Microsoft.CognitiveServices/accounts/$multiservice_account_name --verbose; then
+          if ! az resource delete --ids /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/myResourceGroup4/providers/Microsoft.CognitiveServices/accounts/$multiservice_account_name --verbose; then
             echo "Failed to purge MultiService account resource: $multiservice_account_name"
             handle_error 1
           else
