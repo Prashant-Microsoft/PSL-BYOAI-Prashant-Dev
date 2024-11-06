@@ -110,25 +110,27 @@ jobs:
             exit $1
           }
 
-          # Purge OpenAI resource
-          echo "Purging the OpenAI Resource..."
-          if ! az resource delete --ids /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/myResourceGroup4/providers/Microsoft.CognitiveServices/accounts/$openai_name --verbose; then
-            echo "Failed to purge OpenAI resource: $openai_name"
-            handle_error 1
-          else
-            echo "Purged the OpenAI Resource: $openai_name"
-          fi
-   
-           # Purge MultiService account resource
-          echo "Purging the MultiService account Resource..."
-          if ! az resource delete --ids /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/myResourceGroup4/providers/Microsoft.CognitiveServices/accounts/$multiservice_account_name --verbose; then
-            echo "Failed to purge MultiService account resource: $multiservice_account_name"
-            handle_error 1
-          else
-            echo "Purged the MultiService account Resource: $multiservice_account_name"
-          fi
+          az resource delete --ids /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/myResourceGroup4/providers/Microsoft.CognitiveServices/accounts/$multiservice_account_name --verbose
 
-          echo "Resource purging completed successfully"
+          # # Purge OpenAI resource
+          # echo "Purging the OpenAI Resource..."
+          # if ! az resource delete --ids /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/myResourceGroup4/providers/Microsoft.CognitiveServices/accounts/$openai_name --verbose; then
+          #   echo "Failed to purge OpenAI resource: $openai_name"
+          #   handle_error 1
+          # else
+          #   echo "Purged the OpenAI Resource: $openai_name"
+          # fi
+   
+          #  # Purge MultiService account resource
+          # echo "Purging the MultiService account Resource..."
+          # if ! az resource delete --ids /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/myResourceGroup4/providers/Microsoft.CognitiveServices/accounts/$multiservice_account_name --verbose; then
+          #   echo "Failed to purge MultiService account resource: $multiservice_account_name"
+          #   handle_error 1
+          # else
+          #   echo "Purged the MultiService account Resource: $multiservice_account_name"
+          # fi
+
+          # echo "Resource purging completed successfully"
 
       # - name: Send Notification on Failure
       #   if: failure()
