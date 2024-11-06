@@ -33,7 +33,7 @@ jobs:
         run: |
           echo "Generating a unique resource group name..."
           TIMESTAMP=$(date +%Y%m%d%H%M%S)
-          COMMON_PART="pslautomationRes"
+          COMMON_PART="psltestRes"
           UNIQUE_RG_NAME="${COMMON_PART}${TIMESTAMP}"
           echo "RESOURCE_GROUP_NAME=${UNIQUE_RG_NAME}" >> $GITHUB_ENV
           echo "Generated Resource_GROUP_PREFIX: ${UNIQUE_RG_NAME}" 
@@ -46,47 +46,68 @@ jobs:
           rg_exists=$(az group exists --name ${{ env.RESOURCE_GROUP_NAME }})
           if [ "$rg_exists" = "false" ]; then
             echo "Resource group does not exist. Creating..."
-            az group create --name ${{ env.RESOURCE_GROUP_NAME }} --location eastus || { echo "Error creating resource group"; exit 1; }
+            az group create --name ${{ env.RESOURCE_GROUP_NAME }} --location eastus2 || { echo "Error creating resource group"; exit 1; }
           else
             echo "Resource group already exists."
           fi
-
-      - name: Generate Unique Solution Prefix
-        id: generate_solution_prefix
+        
+      - name: Create openai service
+        id: openai
         run: |
-          set -e
-          COMMON_PART="pslr"
-          TIMESTAMP=$(date +%s)  
-          UPDATED_TIMESTAMP=$(echo $TIMESTAMP | tail -c 3) 
-          UNIQUE_SOLUTION_PREFIX="${COMMON_PART}${UPDATED_TIMESTAMP}"
-          echo "SOLUTION_PREFIX=${UNIQUE_SOLUTION_PREFIX}" >> $GITHUB_ENV
-          echo "Generated SOLUTION_PREFIX: ${UNIQUE_SOLUTION_PREFIX}" 
+          echo "creating azure open service"
+          az cognitiveservices account create --name myOpenAIResource23 --resource-group ${{ env.RESOURCE_GROUP_NAME }} --kind OpenAI --sku S0 --location eastus --yes
 
-      - name: Deploy Bicep Template
-        id: deploy
-        run: |
-          set -e
-          az deployment group create \
-            --resource-group ${{ env.RESOURCE_GROUP_NAME }} \
-            --template-file ResearchAssistant/Deployment/bicep/main.bicep \
-            --parameters solutionPrefix=${{ env.SOLUTION_PREFIX }}
-            
-      # - name: Delete Bicep Deployment
-      #   if: success()
+      # - name: Generate Unique Solution Prefix
+      #   id: generate_solution_prefix
       #   run: |
-      #     set -e  
-      #     echo "Checking if resource group exists..."
-      #     rg_exists=$(az group exists --name ${{ env.RESOURCE_GROUP_NAME }})
-      #     if [ "$rg_exists" = "true" ]; then
-      #       echo "Resource group exist. Cleaning..."
-      #       az group delete \
-      #           --name ${{ env.RESOURCE_GROUP_NAME }} \
-      #           --yes \
-      #           --no-wait
-      #       echo "Resource group deleted...  ${{ env.RESOURCE_GROUP_NAME }}"
-      #     else
-      #       echo "Resource group does not exists."
-      #     fi
+      #     set -e
+      #     COMMON_PART="pslr"
+      #     TIMESTAMP=$(date +%s)  
+      #     UPDATED_TIMESTAMP=$(echo $TIMESTAMP | tail -c 3) 
+      #     UNIQUE_SOLUTION_PREFIX="${COMMON_PART}${UPDATED_TIMESTAMP}"
+      #     echo "SOLUTION_PREFIX=${UNIQUE_SOLUTION_PREFIX}" >> $GITHUB_ENV
+      #     echo "Generated SOLUTION_PREFIX: ${UNIQUE_SOLUTION_PREFIX}" 
+
+      # - name: Deploy Bicep Template
+      #   id: deploy
+      #   run: |
+      #     set -e
+      #     az deployment group create \
+      #       --resource-group ${{ env.RESOURCE_GROUP_NAME }} \
+      #       --template-file ResearchAssistant/Deployment/bicep/main.bicep \
+      #       --parameters solutionPrefix=${{ env.SOLUTION_PREFIX }}
+            
+      - name: Delete Bicep Deployment
+        if: success()
+        run: |
+          set -e  
+          echo "Checking if resource group exists..."
+          rg_exists=$(az group exists --name ${{ env.RESOURCE_GROUP_NAME }})
+          if [ "$rg_exists" = "true" ]; then
+            echo "Resource group exist. Cleaning..."
+            az group delete \
+                --name ${{ env.RESOURCE_GROUP_NAME }} \
+                --yes \
+                --no-wait
+            echo "Resource group deleted...  ${{ env.RESOURCE_GROUP_NAME }}"
+          else
+            echo "Resource group does not exists."
+          fi
+
+      - name: Purging the Resources
+        if: success()
+        run: |
+          set -e  
+          echo "Checking if resource group exists..."
+          rg_exists=$(az group exists --name ${{ env.RESOURCE_GROUP_NAME }})
+          if [ "$rg_exists" = "true" ]; then
+          # Purge specific Cognitive Services resource by ResourceId
+            echo "Purging Cognitive Services resource..."
+            Remove-AzResource -ResourceId /subscriptions/{subscriptionID}/providers/Microsoft.CognitiveServices/locations/eastus/resourceGroups/{resourceGroup}/deletedAccounts/{resourceName} -ApiVersion 2021-04-30
+            echo "Cognitive Services resource purged..."
+          else
+            echo "Resource group does not exists."
+          fi
 
       - name: Send Notification on Failure
         if: failure()
