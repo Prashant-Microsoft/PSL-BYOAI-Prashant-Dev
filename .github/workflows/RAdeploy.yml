@@ -113,7 +113,7 @@ jobs:
             \$clientSecret = '${{ secrets.AZURE_CLIENT_SECRET }}'
             
             # Connect-AzAccount to authenticate using the service principal
-            Connect-AzAccount -ServicePrincipal -Tenant \$tenantId -ApplicationId \$clientId -ClientSecret \$clientSecret
+            Connect-AzAccount -ServicePrincipal -Tenant \$tenantId -ApplicationId \$clientId -CertificateThumbprint \$clientSecret
           "
       
           # Purge specific Cognitive Services resource by ResourceId
