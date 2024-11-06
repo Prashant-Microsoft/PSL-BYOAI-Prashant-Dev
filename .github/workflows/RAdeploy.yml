@@ -103,7 +103,7 @@ jobs:
           echo "Azure Multi Service Account: $application_name"
 
           echo "Purging the OpenAI Resource..."
-          az resource delete --ids /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/providers/Microsoft.CognitiveServices/locations/eastus/resourceGroups/myResourceGroup4/deletedAccounts/$openai_name --verbose
+          az resource delete --ids /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/providers/Microsoft.CognitiveServices/locations/eastus2/resourceGroups/myResourceGroup4/deletedAccounts/$openai_name --verbose
           echo "Purged the OpenAI Resource: $openai_name"
    
           echo "Purging the MultiService account Resource..."
