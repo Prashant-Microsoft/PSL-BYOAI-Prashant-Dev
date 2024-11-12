@@ -34,23 +34,22 @@ jobs:
           echo "Generating a unique resource group name..."
           TIMESTAMP=$(date +%Y%m%d%H%M%S)
           COMMON_PART="pslautomationRes"
-          # UNIQUE_RG_NAME="${COMMON_PART}${TIMESTAMP}"
-          UNIQUE_RG_NAME="pslautomationRes20241106113537"
+          UNIQUE_RG_NAME="${COMMON_PART}${TIMESTAMP}"
           echo "RESOURCE_GROUP_NAME=${UNIQUE_RG_NAME}" >> $GITHUB_ENV
           echo "Generated Resource_GROUP_PREFIX: ${UNIQUE_RG_NAME}" 
       
-      # - name: Check and Create Resource Group
-      #   id: check_create_rg
-      #   run: |
-      #     set -e  
-      #     echo "Checking if resource group exists..."
-      #     rg_exists=$(az group exists --name ${{ env.RESOURCE_GROUP_NAME }})
-      #     if [ "$rg_exists" = "false" ]; then
-      #       echo "Resource group does not exist. Creating..."
-      #       az group create --name ${{ env.RESOURCE_GROUP_NAME }} --location eastus2 || { echo "Error creating resource group"; exit 1; }
-      #     else
-      #       echo "Resource group already exists."
-      #     fi
+      - name: Check and Create Resource Group
+        id: check_create_rg
+        run: |
+          set -e  
+          echo "Checking if resource group exists..."
+          rg_exists=$(az group exists --name ${ env.RESOURCE_GROUP_NAME })
+          if [ "$rg_exists" = "false" ]; then
+            echo "Resource group does not exist. Creating..."
+            az group create --name ${ env.RESOURCE_GROUP_NAME } --location eastus2 || { echo "Error creating resource group"; exit 1; }
+          else
+            echo "Resource group already exists."
+          fi
 
       # - name: Generate Unique Solution Prefix
       #   id: generate_solution_prefix
@@ -71,21 +70,6 @@ jobs:
       #       --resource-group ${{ env.RESOURCE_GROUP_NAME }} \
       #       --template-file ResearchAssistant/Deployment/bicep/main.bicep \
       #       --parameters solutionPrefix=${{ env.SOLUTION_PREFIX }}
-           
-      # - name: List Key Vaults and Store in Array
-      #   id: list_keyvaults
-      #   run: |
-      #     echo "Listing all Key Vaults in the resource group ${RESOURCE_GROUP_NAME}..."
-      #     # keyvaults=$(az resource list --resource-group ${{ env.RESOURCE_GROUP_NAME }} --query "[?type=='Microsoft.KeyVault/vaults'].name" -o tsv)
-      #     keyvaults=$(az resource list --resource-group myResourceGroup4 --query "[?type=='Microsoft.KeyVault/vaults'].name" -o tsv)
-      #     if [ -z "$keyvaults" ]; then
-      #       echo "No Key Vaults found in resource group ${RESOURCE_GROUP_NAME}."
-      #       echo "KEYVAULTS=[]" >> $GITHUB_ENV
-      #     else
-      #       echo "Key Vaults found: $keyvaults"
-      #       keyvault_array="[$(echo "$keyvaults" | sed 's/\s\+/,/g')]"
-      #       echo "KEYVAULTS=$keyvault_array" >> $GITHUB_ENV
-      #     fi
 
       # - name: List Key Vaults and Store in Array
       #   id: list_keyvaults
@@ -93,7 +77,7 @@ jobs:
       #     echo "Listing all Key Vaults in the resource group ${RESOURCE_GROUP_NAME}..."
           
       #     # Get the list of Key Vaults in the specified resource group
-      #     keyvaults=$(az resource list --resource-group myResourceGroup4 --query "[?type=='Microsoft.KeyVault/vaults'].name" -o tsv)
+      #     keyvaults=$(az resource list --resource-group ${{ env.RESOURCE_GROUP_NAME }} --query "[?type=='Microsoft.KeyVault/vaults'].name" -o tsv)
 
       #     if [ -z "$keyvaults" ]; then
       #       echo "No Key Vaults found in resource group ${RESOURCE_GROUP_NAME}."
@@ -117,11 +101,6 @@ jobs:
       #       # Output the formatted array and save it to the environment variable
       #       echo "KEYVAULTS=$keyvault_array" >> $GITHUB_ENV
       #     fi
-
-
-
-
-
           
       # - name: Delete Bicep Deployment
       #   if: success()
@@ -140,69 +119,61 @@ jobs:
       #       echo "Resource group does not exists."
       #     fi
 
-      - name: Purging the Resources
-        if: success()
-        run: |
-          set -e 
-          # # Define variables
-          # OPENAI_COMMON_PART="purg02-openai"
-          # openai_name="${{ env.SOLUTION_PREFIX }}${OPENAI_COMMON_PART}"
-          # echo "Azure OpenAI: $openai_name"
+      # - name: Purging the Resources
+      #   if: success()
+      #   run: |
+      #     set -e 
+      #     # Define variables
+      #     OPENAI_COMMON_PART="-openai"
+      #     openai_name="${{ env.SOLUTION_PREFIX }}${OPENAI_COMMON_PART}"
+      #     echo "Azure OpenAI: $openai_name"
 
-          # MULTISERVICE_COMMON_PART="purg02-cogser"
-          # multiservice_account_name="${{ env.SOLUTION_PREFIX }}${MULTISERVICE_COMMON_PART}"
-          # echo "Azure Multi Service Account: $multiservice_account_name"
+      #     MULTISERVICE_COMMON_PART="-cogser"
+      #     multiservice_account_name="${{ env.SOLUTION_PREFIX }}${MULTISERVICE_COMMON_PART}"
+      #     echo "Azure Multi Service Account: $multiservice_account_name"
 
-          # # Function to handle errors
-          # handle_error() {
-          #   echo "Error during resource deletion process. Exiting with status code: $1"
-          #   exit $1
-          # }
-
-          # # Purge OpenAI resource
-          # echo "Purging the OpenAI Resource..."
-          # if ! az resource delete --ids /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/providers/Microsoft.CognitiveServices/locations/eastus2/resourceGroups/${{ env.RESOURCE_GROUP_NAME }}/deletedAccounts/$openai_name --verbose; then
-          #   echo "Failed to purge OpenAI resource: $openai_name"
-          #   handle_error 1
-          # else
-          #   echo "Purged the OpenAI Resource: $openai_name"
-          # fi
+      #     # Purge OpenAI resource
+      #     echo "Purging the OpenAI Resource..."
+      #     if ! az resource delete --ids /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/providers/Microsoft.CognitiveServices/locations/eastus2/resourceGroups/${{ env.RESOURCE_GROUP_NAME }}/deletedAccounts/$openai_name --verbose; then
+      #       echo "Failed to purge OpenAI resource: $openai_name"
+      #     else
+      #       echo "Purged the OpenAI Resource: $openai_name"
+      #     fi
    
-          #  # Purge MultiService account resource
-          # echo "Purging the MultiService account Resource..."
-          # if ! az resource delete --ids /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/providers/Microsoft.CognitiveServices/locations/eastus2/resourceGroups/${{ env.RESOURCE_GROUP_NAME }}/deletedAccounts/$multiservice_account_name --verbose; then
-          #   echo "Failed to purge MultiService account resource: $multiservice_account_name"
-          #   handle_error 1
-          # else
-          #   echo "Purged the MultiService account Resource: $multiservice_account_name"
-          # fi
+      #      # Purge MultiService account resource
+      #     echo "Purging the MultiService account Resource..."
+      #     if ! az resource delete --ids /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/providers/Microsoft.CognitiveServices/locations/eastus2/resourceGroups/${{ env.RESOURCE_GROUP_NAME }}/deletedAccounts/$multiservice_account_name --verbose; then
+      #       echo "Failed to purge MultiService account resource: $multiservice_account_name"
+      #     else
+      #       echo "Purged the MultiService account Resource: $multiservice_account_name"
+      #     fi
 
-          # Ensure KEYVAULTS is properly formatted as a comma-separated string
-          # KEYVAULTS="${{ env.KEYVAULTS }}"
-          KEYVAULTS=["aihubprwkeyvault2479f205","myKeyVaulttest6"]
+      #     # Ensure KEYVAULTS is properly formatted as a comma-separated string
+      #     # KEYVAULTS="${{ env.KEYVAULTS }}"
+      #     KEYVAULTS=["aihubprwkeyvault2479f205","myKeyVaulttest6"]
 
-          # Remove the surrounding square brackets, if they exist
-          stripped_keyvaults=$(echo "$KEYVAULTS" | sed 's/\[\|\]//g')
+      #     # Remove the surrounding square brackets, if they exist
+      #     stripped_keyvaults=$(echo "$KEYVAULTS" | sed 's/\[\|\]//g')
           
-          # Convert the comma-separated string into an array
-          IFS=',' read -r -a keyvault_array <<< "$stripped_keyvaults"
+      #     # Convert the comma-separated string into an array
+      #     IFS=',' read -r -a keyvault_array <<< "$stripped_keyvaults"
 
-          echo "Using Key Vaults Array..."
-          for keyvault_name in "${keyvault_array[@]}"; do
-            echo "Processing Key Vault: $keyvault_name"
-            # Check if the Key Vault is soft-deleted
-            deleted_vaults=$(az keyvault list-deleted --query "[?name=='$keyvault_name']" -o json)
+      #     echo "Using Key Vaults Array..."
+      #     for keyvault_name in "${keyvault_array[@]}"; do
+      #       echo "Processing Key Vault: $keyvault_name"
+      #       # Check if the Key Vault is soft-deleted
+      #       deleted_vaults=$(az keyvault list-deleted --query "[?name=='$keyvault_name']" -o json --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }})
 
-            # If the Key Vault is found in the soft-deleted state, purge it
-            if [ "$(echo "$deleted_vaults" | jq length)" -gt 0 ]; then
-              echo "Key Vault '$keyvault_name' is soft-deleted. Proceeding to purge..."
-              az keyvault purge --name "$keyvault_name" --no-wait
-            else
-              echo "Key Vault '$keyvault_name' is not soft-deleted. No action taken."
-            fi
-          done
+      #       # If the Key Vault is found in the soft-deleted state, purge it
+      #       if [ "$(echo "$deleted_vaults" | jq length)" -gt 0 ]; then
+      #         echo "Key Vault '$keyvault_name' is soft-deleted. Proceeding to purge..."
+      #         az keyvault purge --name "$keyvault_name" --no-wait
+      #       else
+      #         echo "Key Vault '$keyvault_name' is not soft-deleted. No action taken."
+      #       fi
+      #     done
 
-          echo "Resource purging completed successfully"
+      #     echo "Resource purging completed successfully"
 
       # - name: Send Notification on Failure
       #   if: failure()
