@@ -179,31 +179,13 @@ jobs:
 
 
           echo "Using Key Vaults Array..."
-
-          # Ensure KEYVAULTS is properly formatted as a comma-separated string
-          KEYVAULTS="${{ env.KEYVAULTS }}"
-          
-          # Remove the surrounding square brackets, if they exist
-          stripped_keyvaults=$(echo "$KEYVAULTS" | sed 's/\[\|\]//g')
-          
-          # Convert the comma-separated string into an array
-          IFS=',' read -r -a keyvault_array <<< "$stripped_keyvaults"
-          
-          # Iterate over the array and process each Key Vault
-          for KEYVAULT in "${keyvault_array[@]}"; do
-            # Trim any leading or trailing whitespace from each Key Vault name
-            KEYVAULT=$(echo "$KEYVAULT" | xargs)
-      
+          for KEYVAULT in "${KEYVAULTS[@]}"; do
             echo "Processing Key Vault: $KEYVAULT"
+            # Add your logic to process each Key Vault here
+            # az resource delete --ids /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/providers/Microsoft.CognitiveServices/locations/eastus2/resourceGroups/${{ env.RESOURCE_GROUP_NAME }}/deletedAccounts/$multiservice_account_name --verbose
+          done
 
-          # echo "Using Key Vaults Array..."
-          # for KEYVAULT in "${KEYVAULTS[@]}"; do
-          #   echo "Processing Key Vault: $KEYVAULT"
-          #   # Add your logic to process each Key Vault here
-          #   # az resource delete --ids /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/providers/Microsoft.CognitiveServices/locations/eastus2/resourceGroups/${{ env.RESOURCE_GROUP_NAME }}/deletedAccounts/$multiservice_account_name --verbose
-          # done
-
-          # echo "Resource purging completed successfully"
+          echo "Resource purging completed successfully"
 
       # - name: Send Notification on Failure
       #   if: failure()
