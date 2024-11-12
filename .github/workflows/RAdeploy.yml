@@ -124,19 +124,19 @@ jobs:
         run: |
           echo "Listing all Key Vaults in the resource group ${RESOURCE_GROUP_NAME}..."
           
-          # List all Key Vaults in the resource group and store the names in an environment variable
-          keyvaults=$(az keyvault list --resource-group myResourceGroup4 --query "[].name" -o tsv)
+          # List all Key Vaults in the resource group and store the names in a JSON array
+          keyvaults=$(az keyvault list --resource-group myResourceGroup4--query "[].name" -o json)
           
-          if [ -z "$keyvaults" ]; then
+          if [ -z "$keyvaults" ] || [ "$keyvaults" == "[]" ]; then
             echo "No Key Vaults found in resource group ${RESOURCE_GROUP_NAME}."
             echo "KEYVAULTS=[]" >> $GITHUB_ENV  # Store an empty array if no Key Vaults are found
           else
             echo "Key Vaults found: $keyvaults"
-            # Store the Key Vaults list in the environment variable (comma-separated)
+            # Store the Key Vaults list as a JSON array in the environment variable
             echo "KEYVAULTS=$keyvaults" >> $GITHUB_ENV
           fi
 
-      # Step 2: Iterate Over Key Vaults
+      # Step 2: Iterate Over Key Vaults (JSON Array Handling)
       - name: Iterate Over Key Vaults
         id: iterate_keyvaults
         run: |
@@ -145,17 +145,19 @@ jobs:
           # Get the list of Key Vaults from the environment variable
           KEYVAULTS="${{ env.KEYVAULTS }}"
 
-          if [ -z "$KEYVAULTS" ]; then
+          if [ "$KEYVAULTS" == "[]" ] || [ -z "$KEYVAULTS" ]; then
             echo "No Key Vaults to process."
           else
-            # Iterate over each Key Vault (space-separated)
-            for KEYVAULT in $KEYVAULTS; do
+            # Iterate over each Key Vault in the JSON array
+            # Use jq to parse the JSON array
+            for KEYVAULT in $(echo "$KEYVAULTS" | jq -r '.[]'); do
               echo "Processing Key Vault: $KEYVAULT"
               # Add your logic to process each Key Vault here
               # For example, you can delete, purge, or perform other actions on each Key Vault
               # az keyvault purge --name $KEYVAULT --verbose
             done
           fi
+
 
 
 
