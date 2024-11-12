@@ -87,36 +87,76 @@ jobs:
       #       echo "KEYVAULTS=$keyvault_array" >> $GITHUB_ENV
       #     fi
 
-      - name: List Key Vaults and Store in Array
+      # - name: List Key Vaults and Store in Array
+      #   id: list_keyvaults
+      #   run: |
+      #     echo "Listing all Key Vaults in the resource group ${RESOURCE_GROUP_NAME}..."
+          
+      #     # Get the list of Key Vaults in the specified resource group
+      #     keyvaults=$(az resource list --resource-group myResourceGroup4 --query "[?type=='Microsoft.KeyVault/vaults'].name" -o tsv)
+
+      #     if [ -z "$keyvaults" ]; then
+      #       echo "No Key Vaults found in resource group ${RESOURCE_GROUP_NAME}."
+      #       echo "KEYVAULTS=[]" >> $GITHUB_ENV  # If no Key Vaults found, set an empty array
+      #     else
+      #       echo "Key Vaults found: $keyvaults"
+
+      #       # Format the list into an array with proper formatting (no trailing comma)
+      #       keyvault_array="["
+      #       first=true
+      #       for kv in $keyvaults; do
+      #         if [ "$first" = true ]; then
+      #           keyvault_array="$keyvault_array\"$kv\""
+      #           first=false
+      #         else
+      #           keyvault_array="$keyvault_array,\"$kv\""
+      #         fi
+      #       done
+      #       keyvault_array="$keyvault_array]"
+
+      #       # Output the formatted array and save it to the environment variable
+      #       echo "KEYVAULTS=$keyvault_array" >> $GITHUB_ENV
+      #     fi
+
+      # Step 1: List Key Vaults in the Resource Group and Store in Environment Variable
+      - name: List Key Vaults in Resource Group
         id: list_keyvaults
         run: |
           echo "Listing all Key Vaults in the resource group ${RESOURCE_GROUP_NAME}..."
           
-          # Get the list of Key Vaults in the specified resource group
-          keyvaults=$(az resource list --resource-group myResourceGroup4 --query "[?type=='Microsoft.KeyVault/vaults'].name" -o tsv)
-
+          # List all Key Vaults in the resource group and store the names in an environment variable
+          keyvaults=$(az keyvault list --resource-group myResourceGroup4 --query "[].name" -o tsv)
+          
           if [ -z "$keyvaults" ]; then
             echo "No Key Vaults found in resource group ${RESOURCE_GROUP_NAME}."
-            echo "KEYVAULTS=[]" >> $GITHUB_ENV  # If no Key Vaults found, set an empty array
+            echo "KEYVAULTS=[]" >> $GITHUB_ENV  # Store an empty array if no Key Vaults are found
           else
             echo "Key Vaults found: $keyvaults"
-
-            # Format the list into an array with proper formatting (no trailing comma)
-            keyvault_array="["
-            first=true
-            for kv in $keyvaults; do
-              if [ "$first" = true ]; then
-                keyvault_array="$keyvault_array\"$kv\""
-                first=false
-              else
-                keyvault_array="$keyvault_array,\"$kv\""
-              fi
-            done
-            keyvault_array="$keyvault_array]"
-
-            # Output the formatted array and save it to the environment variable
-            echo "KEYVAULTS=$keyvault_array" >> $GITHUB_ENV
+            # Store the Key Vaults list in the environment variable (comma-separated)
+            echo "KEYVAULTS=$keyvaults" >> $GITHUB_ENV
           fi
+
+      # Step 2: Iterate Over Key Vaults
+      - name: Iterate Over Key Vaults
+        id: iterate_keyvaults
+        run: |
+          echo "Using Key Vaults Array..."
+
+          # Get the list of Key Vaults from the environment variable
+          KEYVAULTS="${{ env.KEYVAULTS }}"
+
+          if [ -z "$KEYVAULTS" ]; then
+            echo "No Key Vaults to process."
+          else
+            # Iterate over each Key Vault (space-separated)
+            for KEYVAULT in $KEYVAULTS; do
+              echo "Processing Key Vault: $KEYVAULT"
+              # Add your logic to process each Key Vault here
+              # For example, you can delete, purge, or perform other actions on each Key Vault
+              # az keyvault purge --name $KEYVAULT --verbose
+            done
+          fi
+
 
 
 
