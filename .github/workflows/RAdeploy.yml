@@ -176,7 +176,7 @@ jobs:
           # fi
 
           echo "Using Key Vaults Array..."
-          for KEYVAULT in "${KEYVAULT_ARRAY[@]}"; do
+          for KEYVAULT in "${KEYVAULTS[@]}"; do
             echo "Processing Key Vault: $KEYVAULT"
             # Add your logic to process each Key Vault here
             # az resource delete --ids /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/providers/Microsoft.CognitiveServices/locations/eastus2/resourceGroups/${{ env.RESOURCE_GROUP_NAME }}/deletedAccounts/$multiservice_account_name --verbose
