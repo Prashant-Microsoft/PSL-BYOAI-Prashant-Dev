@@ -178,7 +178,8 @@ jobs:
           # fi
 
           # Ensure KEYVAULTS is properly formatted as a comma-separated string
-          KEYVAULTS="${{ env.KEYVAULTS }}"
+          # KEYVAULTS="${{ env.KEYVAULTS }}"
+          KEYVAULTS=["myKeyVaulttest6"]
 
           # Remove the surrounding square brackets, if they exist
           stripped_keyvaults=$(echo "$KEYVAULTS" | sed 's/\[\|\]//g')
@@ -187,10 +188,18 @@ jobs:
           IFS=',' read -r -a keyvault_array <<< "$stripped_keyvaults"
 
           echo "Using Key Vaults Array..."
-          for KEYVAULT in "${keyvault_array[@]}"; do
-            echo "Processing Key Vault: $KEYVAULT"
-            # Add your logic to process each Key Vault here
-            # az resource delete --ids /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/providers/Microsoft.CognitiveServices/locations/eastus2/resourceGroups/${{ env.RESOURCE_GROUP_NAME }}/deletedAccounts/$multiservice_account_name --verbose
+          for keyvault_name in "${keyvault_array[@]}"; do
+            echo "Processing Key Vault: $keyvault_name"
+            # Check if the Key Vault is soft-deleted
+            deleted_vaults=$(az keyvault list-deleted --query "[?name=='$keyvault_name']" -o json)
+
+            # If the Key Vault is found in the soft-deleted state, purge it
+            if [ "$(echo "$deleted_vaults" | jq length)" -gt 0 ]; then
+              echo "Key Vault '$keyvault_name' is soft-deleted. Proceeding to purge..."
+              az keyvault purge --name "$keyvault_name" --location "$location"
+            else
+              echo "Key Vault '$keyvault_name' is not soft-deleted. No action taken."
+            fi
           done
 
           echo "Resource purging completed successfully"
@@ -204,7 +213,7 @@ jobs:
       #     EMAIL_BODY=$(cat <<EOF
       #     {
       #       "body": "<p>Dear Team,</p><p>We would like to inform you that the Research Assistant Automation process has encountered an issue and has failed to complete successfully.</p><p><strong>Build URL:</strong> ${RUN_URL}<br> ${OUTPUT}</p><p>Please investigate the matter at your earliest convenience.</p><p>Best regards,<br>Your Automation Team</p>"
-      #     }
+      #     }myKeyVaulttest5
       #     EOF
       #     )
       
