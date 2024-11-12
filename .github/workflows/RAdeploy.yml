@@ -179,7 +179,7 @@ jobs:
 
           # Ensure KEYVAULTS is properly formatted as a comma-separated string
           # KEYVAULTS="${{ env.KEYVAULTS }}"
-          KEYVAULTS=["myKeyVaulttest6"]
+          KEYVAULTS=["aihubprwkeyvault2479f205","myKeyVaulttest6"]
 
           # Remove the surrounding square brackets, if they exist
           stripped_keyvaults=$(echo "$KEYVAULTS" | sed 's/\[\|\]//g')
@@ -196,7 +196,7 @@ jobs:
             # If the Key Vault is found in the soft-deleted state, purge it
             if [ "$(echo "$deleted_vaults" | jq length)" -gt 0 ]; then
               echo "Key Vault '$keyvault_name' is soft-deleted. Proceeding to purge..."
-              az keyvault purge --name "$keyvault_name" --location "$location"
+              az keyvault purge --name "$keyvault_name" --no-wait
             else
               echo "Key Vault '$keyvault_name' is not soft-deleted. No action taken."
             fi
