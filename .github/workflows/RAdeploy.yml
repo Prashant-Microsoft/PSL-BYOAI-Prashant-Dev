@@ -119,6 +119,11 @@ jobs:
             echo "Resource group does not exists."
           fi
 
+      - name: Wait for resource deletion to complete
+        run: |
+          echo "Waiting for resource group deletion to complete..."
+          sleep 120  # Wait for 2 minutes (200 seconds) to allow deletion to complete
+
       - name: Purging the Resources
         if: success()
         run: |
