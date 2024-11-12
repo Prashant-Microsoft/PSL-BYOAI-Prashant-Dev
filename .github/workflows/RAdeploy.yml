@@ -42,7 +42,7 @@ jobs:
         id: check_create_rg
         run: |
           set -e  
-          echo "Checking if resource group exists... ${{ env.RESOURCE_GROUP_NAME }}"
+          echo "Checking if resource group exists... ${ env.RESOURCE_GROUP_NAME }"
           rg_exists=$(az group exists --name ${{ env.RESOURCE_GROUP_NAME }})
           if [ "$rg_exists" = "false" ]; then
             echo "Resource group does not exist. Creating..."
