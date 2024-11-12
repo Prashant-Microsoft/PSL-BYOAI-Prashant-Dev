@@ -87,75 +87,35 @@ jobs:
       #       echo "KEYVAULTS=$keyvault_array" >> $GITHUB_ENV
       #     fi
 
-      # - name: List Key Vaults and Store in Array
-      #   id: list_keyvaults
-      #   run: |
-      #     echo "Listing all Key Vaults in the resource group ${RESOURCE_GROUP_NAME}..."
-          
-      #     # Get the list of Key Vaults in the specified resource group
-      #     keyvaults=$(az resource list --resource-group myResourceGroup4 --query "[?type=='Microsoft.KeyVault/vaults'].name" -o tsv)
-
-      #     if [ -z "$keyvaults" ]; then
-      #       echo "No Key Vaults found in resource group ${RESOURCE_GROUP_NAME}."
-      #       echo "KEYVAULTS=[]" >> $GITHUB_ENV  # If no Key Vaults found, set an empty array
-      #     else
-      #       echo "Key Vaults found: $keyvaults"
-
-      #       # Format the list into an array with proper formatting (no trailing comma)
-      #       keyvault_array="["
-      #       first=true
-      #       for kv in $keyvaults; do
-      #         if [ "$first" = true ]; then
-      #           keyvault_array="$keyvault_array\"$kv\""
-      #           first=false
-      #         else
-      #           keyvault_array="$keyvault_array,\"$kv\""
-      #         fi
-      #       done
-      #       keyvault_array="$keyvault_array]"
-
-      #       # Output the formatted array and save it to the environment variable
-      #       echo "KEYVAULTS=$keyvault_array" >> $GITHUB_ENV
-      #     fi
-
-      # Step 1: List Key Vaults in the Resource Group and Store in Environment Variable
-      - name: List Key Vaults in Resource Group
+      - name: List Key Vaults and Store in Array
         id: list_keyvaults
         run: |
           echo "Listing all Key Vaults in the resource group ${RESOURCE_GROUP_NAME}..."
           
-          # List all Key Vaults in the resource group and store the names in a JSON array
-          keyvaults=$(az keyvault list --resource-group myResourceGroup4--query "[].name" -o json)
-          
-          if [ -z "$keyvaults" ] || [ "$keyvaults" == "[]" ]; then
+          # Get the list of Key Vaults in the specified resource group
+          keyvaults=$(az resource list --resource-group myResourceGroup4 --query "[?type=='Microsoft.KeyVault/vaults'].name" -o tsv)
+
+          if [ -z "$keyvaults" ]; then
             echo "No Key Vaults found in resource group ${RESOURCE_GROUP_NAME}."
-            echo "KEYVAULTS=[]" >> $GITHUB_ENV  # Store an empty array if no Key Vaults are found
+            echo "KEYVAULTS=[]" >> $GITHUB_ENV  # If no Key Vaults found, set an empty array
           else
             echo "Key Vaults found: $keyvaults"
-            # Store the Key Vaults list as a JSON array in the environment variable
-            echo "KEYVAULTS=$keyvaults" >> $GITHUB_ENV
-          fi
 
-      # Step 2: Iterate Over Key Vaults (JSON Array Handling)
-      - name: Iterate Over Key Vaults
-        id: iterate_keyvaults
-        run: |
-          echo "Using Key Vaults Array..."
-
-          # Get the list of Key Vaults from the environment variable
-          KEYVAULTS="${{ env.KEYVAULTS }}"
-
-          if [ "$KEYVAULTS" == "[]" ] || [ -z "$KEYVAULTS" ]; then
-            echo "No Key Vaults to process."
-          else
-            # Iterate over each Key Vault in the JSON array
-            # Use jq to parse the JSON array
-            for KEYVAULT in $(echo "$KEYVAULTS" | jq -r '.[]'); do
-              echo "Processing Key Vault: $KEYVAULT"
-              # Add your logic to process each Key Vault here
-              # For example, you can delete, purge, or perform other actions on each Key Vault
-              # az keyvault purge --name $KEYVAULT --verbose
+            # Format the list into an array with proper formatting (no trailing comma)
+            keyvault_array="["
+            first=true
+            for kv in $keyvaults; do
+              if [ "$first" = true ]; then
+                keyvault_array="$keyvault_array\"$kv\""
+                first=false
+              else
+                keyvault_array="$keyvault_array,\"$kv\""
+              fi
             done
+            keyvault_array="$keyvault_array]"
+
+            # Output the formatted array and save it to the environment variable
+            echo "KEYVAULTS=$keyvault_array" >> $GITHUB_ENV
           fi
 
 
@@ -217,12 +177,31 @@ jobs:
           #   echo "Purged the MultiService account Resource: $multiservice_account_name"
           # fi
 
+
           echo "Using Key Vaults Array..."
-          for KEYVAULT in "${KEYVAULTS[@]}"; do
+
+          # Ensure KEYVAULTS is properly formatted as a comma-separated string
+          KEYVAULTS="${{ env.KEYVAULTS }}"
+          
+          # Remove the surrounding square brackets, if they exist
+          stripped_keyvaults=$(echo "$KEYVAULTS" | sed 's/\[\|\]//g')
+          
+          # Convert the comma-separated string into an array
+          IFS=',' read -r -a keyvault_array <<< "$stripped_keyvaults"
+          
+          # Iterate over the array and process each Key Vault
+          for KEYVAULT in "${keyvault_array[@]}"; do
+            # Trim any leading or trailing whitespace from each Key Vault name
+            KEYVAULT=$(echo "$KEYVAULT" | xargs)
+      
             echo "Processing Key Vault: $KEYVAULT"
-            # Add your logic to process each Key Vault here
-            # az resource delete --ids /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/providers/Microsoft.CognitiveServices/locations/eastus2/resourceGroups/${{ env.RESOURCE_GROUP_NAME }}/deletedAccounts/$multiservice_account_name --verbose
-          done
+
+          # echo "Using Key Vaults Array..."
+          # for KEYVAULT in "${KEYVAULTS[@]}"; do
+          #   echo "Processing Key Vault: $KEYVAULT"
+          #   # Add your logic to process each Key Vault here
+          #   # az resource delete --ids /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/providers/Microsoft.CognitiveServices/locations/eastus2/resourceGroups/${{ env.RESOURCE_GROUP_NAME }}/deletedAccounts/$multiservice_account_name --verbose
+          # done
 
           echo "Resource purging completed successfully"
 
