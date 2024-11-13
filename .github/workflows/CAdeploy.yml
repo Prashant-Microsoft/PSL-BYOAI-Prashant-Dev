@@ -36,7 +36,7 @@ jobs:
           TIMESTAMP=$(date +%Y%m%d%H%M%S)
           COMMON_PART="pslautomationCli"
           # UNIQUE_RG_NAME="${COMMON_PART}${TIMESTAMP}"
-          UNIQUE_RG_NAME="pslpurgecli"
+          UNIQUE_RG_NAME="pslpurgecli3"
           echo "RESOURCE_GROUP_NAME=${UNIQUE_RG_NAME}" >> $GITHUB_ENV
           echo "Generated RESOURCE_GROUP_PREFIX: ${UNIQUE_RG_NAME}"
       
@@ -58,7 +58,7 @@ jobs:
         id: generate_solution_prefix
         run: |
           set -e
-          COMMON_PART="purc"
+          COMMON_PART="pure"
           TIMESTAMP=$(date +%s)  
           UPDATED_TIMESTAMP=$(echo $TIMESTAMP | tail -c 3) 
           UNIQUE_SOLUTION_PREFIX="${COMMON_PART}${UPDATED_TIMESTAMP}"
@@ -72,7 +72,7 @@ jobs:
           az deployment group create \
             --resource-group ${{ env.RESOURCE_GROUP_NAME }} \
             --template-file ClientAdvisor/Deployment/bicep/main.bicep \
-            --parameters solutionPrefix=${{ env.SOLUTION_PREFIX }} cosmosLocation=southafricanorth
+            --parameters solutionPrefix=${{ env.SOLUTION_PREFIX }} cosmosLocation=eastus2
 
       - name: List KeyVaults and Store in Array
         id: list_keyvaults
